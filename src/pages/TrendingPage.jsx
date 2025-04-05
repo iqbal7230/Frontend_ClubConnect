@@ -5,10 +5,7 @@ import { useAuth } from '../context/authContext';
 import { useState, useEffect } from 'react';
 import {
   HeartIcon,
-  ChatBubbleOvalLeftIcon,
-  ShareIcon,
-  CurrencyDollarIcon,
-  EllipsisHorizontalIcon,
+
   UserIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
