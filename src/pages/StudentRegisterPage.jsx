@@ -28,7 +28,7 @@ const StudentRegisterPage = ({  onRegister }) => {
     console.log("payload:", payload);
     console.log("body:",JSON.stringify(payload));
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/studentregister`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ParticipantsReg/studentregister`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -76,7 +76,7 @@ const StudentRegisterPage = ({  onRegister }) => {
                 required 
               />
             </div>
-            {/* <div className="space-y-2">
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Phone Number</label>
               <input 
                 type="text" 
@@ -95,7 +95,7 @@ const StudentRegisterPage = ({  onRegister }) => {
                 onChange={(e) => setLeader({ ...leader, college: e.target.value })} 
                 required 
               />
-            </div> */}
+            </div>
           </div>
         </div>
 

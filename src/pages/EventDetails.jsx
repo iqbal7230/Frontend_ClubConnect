@@ -1,6 +1,7 @@
 // src/pages/EventDetails.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { MapPin, Calendar } from 'lucide-react';
 
 const EventDetails = () => {
   const [event, setEvent] = useState(null);
@@ -12,22 +13,11 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        console.log('API URL:', apiUrl);
-        
-        const url = `${apiUrl}/events/${id}`;
-        console.log('Fetching from:', url);
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
+        const response = await fetch(`${apiUrl}/events/${id}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
-        console.log('Event data:', data);
         setEvent(data);
       } catch (error) {
-        console.error('Error fetching event details:', error);
         setError(error.message);
       }
     };
@@ -37,7 +27,7 @@ const EventDetails = () => {
 
   const nextImage = () => {
     if (event?.images?.length > 0) {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === event.images.length - 1 ? 0 : prevIndex + 1
       );
     }
@@ -45,132 +35,128 @@ const EventDetails = () => {
 
   const prevImage = () => {
     if (event?.images?.length > 0) {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === 0 ? event.images.length - 1 : prevIndex - 1
       );
     }
   };
 
-  if (error) return (
-    <div className="container mx-auto p-4">
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <p>Error: {error}</p>
-      </div>
-    </div>
-  );
+  if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
+  if (!event) return <div className="p-4 text-center">Loading...</div>;
 
-  if (!event) return <div className="container mx-auto p-4 text-center">Loading...</div>;
-
-  // Format date
-  const eventDate = new Date(event.date).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const formattedDate = new Date(event.date).toLocaleDateString('en-US');
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">{event.name}</h1>
-        
-        {/* Main content - responsive layout */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Left side - Event Details */}
-          <div className="w-full md:w-1/2 order-2 md:order-1">
-            <div className="flex flex-row gap-6">
-              <div className="w-1/2 mb-6">
-                <h2 className="text-xl font-semibold mb-2">Event Details</h2>
-                <p className="text-gray-700 mb-4">{event.description}</p>
-                
-                <div className="space-y-2">
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Date:</span> {eventDate}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Time:</span> {event.time}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Institution:</span> {event.institution}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Price:</span> {event.isFree ? 'Free' : `₹${event.price}`}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="w-1/2">
-                <h2 className="text-xl font-semibold mb-2">Organizer Information</h2>
-                <div className="space-y-2">
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Club:</span> {event.clubName}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Performer:</span> {event.performer}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Likes:</span> {event.likeCount || 0}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Created:</span> {new Date(event.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div className="flex flex-wrap items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#1D1D35]">{event.name}</h1>
+        <div className="flex gap-2">
+          <Link to={'/all-events'}>
+          <button className="border border-[#1D1D35] rounded-full px-4 py-1 text-sm hover:bg-[#1D1D35] hover:text-white transition">All event</button>
+          </Link>
+          <button className="border border-[#1D1D35] rounded-full px-4 py-1 text-sm hover:bg-[#1D1D35] hover:text-white transition">Campus event</button>
+          <button className="bg-[#1D1D35] text-white rounded-full px-4 py-1 text-sm">Near Campus event</button>
+        </div>
+      </div>
+
+      {/* Image Carousel */}
+      <div className="relative w-full h-60 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+        {event.images?.length > 0 ? (
+          <>
+            <img
+              src={event.images[currentImageIndex].url}
+              alt={`Event Image ${currentImageIndex + 1}`}
+              className="object-cover w-full h-full"
+            />
+            {event.images.length > 1 && (
+              <>
+                <button onClick={prevImage} className="absolute left-2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-70">&#10094;</button>
+                <button onClick={nextImage} className="absolute right-2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-70">&#10095;</button>
+              </>
+            )}
+          </>
+        ) : (
+          <p className="text-gray-500">No images available</p>
+        )}
+      </div>
+
+      <div className="flex justify-end">
+        <button className="px-4 py-1 rounded-md bg-[#1D1D35] text-white">Share</button>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        {/* About Event Section */}
+        <div className="col-span-2 bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold text-[#1D1D35] mb-2">About Event</h2>
+          <p className="text-sm text-gray-500 mb-4">{event.description || "No description available."}</p>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-sm text-gray-700">
+              <p><strong>Date:</strong> {formattedDate}</p>
+              <p><strong>Time:</strong> {event.time || 'N/A'}</p>
+              <p><strong>Institution:</strong> {event.institution || 'N/A'}</p>
+              <p><strong>Price:</strong> {event.isFree ? 'Free' : `₹${event.price}`}</p>
+            </div>
+            <div className="text-sm text-gray-700">
+              <p><strong>Club:</strong> {event.clubName || 'N/A'}</p>
+              <p><strong>Performer:</strong> {event.performer || 'N/A'}</p>
+              <p><strong>Likes:</strong> {event.likeCount || 0}</p>
+              <p><strong>Created:</strong> {new Date(event.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
-          
-          {/* Right side - Image Gallery */}
-          <div className="w-full md:w-1/2 order-1 md:order-2">
-            <div className="relative h-full flex items-center justify-center">
-              {event.images && event.images.length > 0 ? (
-                <div className="w-full">
-                  <div className="relative">
-                    <img 
-                      src={event.images[currentImageIndex].url} 
-                      alt={`${event.name} - Image ${currentImageIndex + 1}`} 
-                      className="w-full rounded-lg object-contain max-h-80"
-                    />
-                    
-                    {event.images.length > 1 && (
-                      <div className="absolute inset-0 flex items-center justify-between">
-                        <button 
-                          onClick={prevImage}
-                          className="bg-black bg-opacity-50 text-white p-2 rounded-full ml-2 hover:bg-opacity-70"
-                        >
-                          &#10094;
-                        </button>
-                        <button 
-                          onClick={nextImage}
-                          className="bg-black bg-opacity-50 text-white p-2 rounded-full mr-2 hover:bg-opacity-70"
-                        >
-                          &#10095;
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Image Indicators */}
-                  {event.images.length > 1 && (
-                    <div className="flex justify-center mt-2">
-                      {event.images.map((_, index) => (
-                        <button 
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`h-2 w-2 mx-1 rounded-full ${
-                            index === currentImageIndex ? 'bg-blue-600' : 'bg-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full h-60 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-500">No images available</p>
-                </div>
-              )}
+        </div>
+
+        {/* Contact Organizers */}
+        <div className="bg-white p-4 rounded-lg shadow space-y-4">
+          <h2 className="text-sm font-medium text-[#1D1D35]">Contact Organizers</h2>
+          <div className="flex items-center gap-3">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/005/747/617/small/phone-call-icon-symbol-in-trendy-flat-style-call-icon-sign-for-app-logo-web-call-icon-flat-illustration-telephone-symbol-vector.jpg" alt="Organizer" className="w-10 h-10 rounded-full" />
+            <div>
+              <p className="text-sm text-gray-700">{event.phone || "+91 926425663"}</p>
+              <p className="text-sm text-gray-500">{event.organizer || "itz_user"}</p>
             </div>
           </div>
+          <button className="w-full py-2 text-white bg-[#1D1D35] rounded-md">Contact Us</button>
+        </div>
+      </div>
+
+      {/* Schedule & Location */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow">
+          <Calendar className="text-gray-500" />
+          <p className="text-sm text-gray-700">{event.time || "10:00 PM"}</p>
+        </div>
+        <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow">
+          <MapPin className="text-gray-500" />
+          <p className="text-sm text-gray-700">{event.institution || "Location not available"}</p>
+        </div>
+      </div>
+
+      {/* Sponsors */}
+      <div className="bg-white p-4 rounded-lg shadow space-y-2">
+        <h3 className="text-md font-semibold text-[#1D1D35]">Event Sponsors</h3>
+        <div className="flex flex-wrap gap-2">
+          {event.sponsors?.length > 0 ? (
+            event.sponsors.map((s, i) => (
+              <span key={i} className="bg-[#1D1D35] text-white text-sm rounded-full px-4 py-1">{s}</span>
+            ))
+          ) : (
+            <>
+              <span className="bg-[#1D1D35] text-white text-sm rounded-full px-4 py-1">sponsor 01</span>
+              <span className="bg-[#1D1D35] text-white text-sm rounded-full px-4 py-1">sponsor 02</span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Attendees */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-md font-semibold mb-2 text-[#1D1D35]">Attendees</h3>
+        <div className="flex items-center">
+          {[...Array(4)].map((_, i) => (
+            <img key={i} src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg" alt="attendee" className="-ml-2 w-8 h-8 rounded-full border-2 border-white" />
+          ))}
+          <span className="ml-4 text-sm text-gray-600">+15 people</span>
         </div>
       </div>
     </div>
