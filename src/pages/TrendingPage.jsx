@@ -34,7 +34,7 @@ const TrendingPage = () => {
     const fetchTopPosts = async () => {
       try {
         setLoading(true);
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/events/all/top-events`;
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/events/all/getEvent`;
         console.log('Fetching from:', apiUrl);
 
         const response = await fetch(apiUrl);
@@ -48,7 +48,7 @@ const TrendingPage = () => {
         console.log('Fetched data:', data.data);
 
         if (Array.isArray(data.data)) {
-          setTopPosts(data.data.slice(0, 3)); // Limit to 3 for trending
+          setTopPosts(data.data.slice(3, 6)); // Limit to 3 for trending
           setUpcomingPosts(data.data.slice(3)); // Remaining for upcoming
         } else {
           throw new Error('Invalid data format received');
@@ -201,9 +201,11 @@ const handleFeedbackSubmit = async (message) => {
         {/* Tabs - Only visible when user is logged in */}
         {currentUser && (
           <div className="flex justify-center space-x-4 mb-8">
+            <Link to="/all-events">
             <button className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition">
               All events
             </button>
+            </Link>
             <button className="px-4 py-2 bg-white rounded-md hover:bg-gray-100 transition">
               Campus events
             </button>

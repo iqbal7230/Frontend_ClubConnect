@@ -31,19 +31,10 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          {/* Public routes */}
-          {/* <Route path="/" element={<LandingPage/>} /> */}
-          <Route path="/" element={<TrendingPage/>} /> 
-        
           
+          <Route path="/" element={<TrendingPage/>} /> 
           <Route path="/register" element={<Register />} />
           <Route path="/chat" element={<ChatRoom/>} />
-         
-          
-          {/* <Route path="/profile" element={<UserProfile user={user} />} /> */}
-          {/* need to set route of chat */}
-          
-
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/login" element={<Login />} />
           
@@ -53,10 +44,7 @@ function App() {
 
           <Route path="/event/:id" element={<EventDetails />} />
          
-          {/* need to set route of chat */}
-
-          
-        {/* Student routes */}
+      
         <Route path="/register-event/:eventId" element={<PrivateRoute><StudentRegisterPage /></PrivateRoute>} />
         
         {/* Club Admin routes */}
