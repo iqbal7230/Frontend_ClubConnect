@@ -17,69 +17,76 @@ export default function AuthForm({ type }) {
         await register(formData.name, formData.email, formData.password, formData.role);
       }
       navigate('/all-events');
+      // navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.msg || 'Something went wrong');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-          {type === 'login' ? 'SIGN IN TO YOUR ACCOUNT' : 'CREATE A NEW ACCOUNT'}
-        </h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {error && <p className="text-red-500 text-center text-sm">{error}</p>}
-          <div className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            {type === 'login' ? 'Sign in to your account' : 'Create a new account'}
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          <div className="rounded-md shadow-sm space-y-4">
             {type === 'register' && (
               <div>
+                <label htmlFor="name" className="sr-only">Name</label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   required
-                  className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500 text-gray-900 placeholder-gray-500 text-sm"
-                  placeholder="full name"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Full Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
             )}
             <div>
+              <label htmlFor="email" className="sr-only">Email address</label>
               <input
                 id="email"
                 name="email"
-                type={type === 'login' ? 'text' : 'email'}
+                type="email"
                 required
-                className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500 text-gray-900 placeholder-gray-500 text-sm"
-                placeholder="user name"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
             <div>
+              <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500 text-gray-900 placeholder-gray-500 text-sm"
-                placeholder="password"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
             {type === 'register' && (
               <div>
+                <label htmlFor="role" className="sr-only">Role</label>
                 <select
                   id="role"
                   name="role"
                   required
-                  className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500 text-gray-900 placeholder-gray-500 text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 >
-                  <option value="">select role</option>
+                  <option value="">Select Role</option>
                   <option value="student">Student</option>
                   <option value="club-admin">Club Admin</option>
                   <option value="sponsor">Sponsor</option>
@@ -91,26 +98,20 @@ export default function AuthForm({ type }) {
           <div>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#202938] transition"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               {type === 'login' ? 'Sign in' : 'Register'}
             </button>
           </div>
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm">
             {type === 'login' ? (
-              <p>
-                Don’t have an account?{' '}
-                <Link to="/register" className="text-indigo-600 hover:text-indigo-500">
-                  Register
-                </Link>
-              </p>
+              <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Don't have an account? Register
+              </Link>
             ) : (
-              <p>
-                Already have an account?{' '}
-                <Link to="/login" className="text-indigo-600 hover:text-indigo-500">
-                  Sign in
-                </Link>
-              </p>
+              <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Already have an account? Login
+              </Link>
             )}
           </div>
         </form>

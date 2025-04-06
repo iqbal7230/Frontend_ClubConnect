@@ -3,9 +3,7 @@ const ChatSuggestions = ({ onSelect }) => {
       "List the topic of top 3 events this week",
       "which is event is good for coder",
       "What are the upcoming events?",
-      "How to handle event registrations efficiently?",
-      "Apart from event,Tips for engaging students during events?",
-      "What safety measures should we consider?",
+      "List the events in this week",
     ];
   
     return (

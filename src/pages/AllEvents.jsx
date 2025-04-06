@@ -1,169 +1,218 @@
-import { useEffect, useState } from 'react';
-import TeamMemberItem from '../components/TeamMemberItem';
-import { useParams } from 'react-router-dom';
+// src/pages/AllEvents.jsx
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
+import { useState, useEffect } from 'react';
+import { 
+  HeartIcon, 
+  CurrencyDollarIcon, 
+} from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
+import SearchEvents from '../components/SearchEvents';
 
-const StudentRegisterPage = ({ onRegister }) => {
-  const [leader, setLeader] = useState({ name: '', email: '', phone: '', college: '' });
-  const [teamName, setTeamName] = useState('');
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [eventData, setEventData] = useState(null);
-  const { eventId } = useParams();
+const AllEvents = () => {
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
+  const userRole = currentUser?.role || "student";
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [likedPosts, setLikedPosts] = useState(() => {
+    const saved = localStorage.getItem('likedPosts');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const handleEventClick = (eventId) => {
+    navigate(`/event/${eventId}`);
+  };
+
+  const handleRegisterClick = (eventId) => {
+    navigate(`/register-event/${eventId}`);
+  };
+
+  const handleCreateEventClick = () => {
+    navigate('/create-event');
+  };
+
+  const handleSponsorClick = (eventId) => {
+    navigate(`/sponsor-event/${eventId}`);
+  };
+
+  const handleViewAttendees = (eventId) => {
+    navigate(`/event/${eventId}/attendees`);
+  };
+  
+  // Add a new function to handle viewing sponsors
+  const handleViewSponsors = (eventId) => {
+    navigate(`/event/${eventId}/sponsors`);
+  };
 
   useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/all/getEvent/${eventId}`);
-        const data = await response.json();
-        if (data.success) {
-          setEventData(data.event);
-        }
-      } catch (error) {
-        console.error('Failed to fetch event data:', error);
-      }
-    };
-
-    if (eventId) fetchEventData();
-  }, [eventId]);
-
-  const handleAddMember = () => {
-    setTeamMembers([...teamMembers, { name: '' }]);
-  };
-
-  const handleRemoveMember = (index) => {
-    setTeamMembers(teamMembers.filter((_, i) => i !== index));
-  };
-
-  const handleChangeMember = (index, field, value) => {
-    const updatedMembers = [...teamMembers];
-    updatedMembers[index][field] = value;
-    setTeamMembers(updatedMembers);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!eventData) {
-      alert('Event details not loaded. Please try again.');
+    // Redirect if not logged in
+    if (!currentUser) {
+      navigate('/login');
       return;
     }
 
-    const isPaid = eventData.price > 0;
-    let proceed = true;
+    const fetchAllEvents = async () => {
+      try {
+        setLoading(true);
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/events/all/getEvent`;
+        console.log('Fetching from:', apiUrl);
 
-    if (isPaid) {
-      // Replace this with real payment gateway integration
-      proceed = confirm(`This is a paid event. Price: ₹${eventData.price}. Proceed to payment?`);
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch events');
+        }
+
+        const data = await response.json();
+        console.log('Fetched data:', data);
+
+        if (Array.isArray(data.data)) {
+          setEvents(data.data);
+        } else {
+          throw new Error('Invalid data format received');
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching events:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllEvents();
+  }, [currentUser, navigate]);
+
+  const handleLike = async (postId) => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
     }
 
-    if (!proceed) return;
-
-    const payload = { eventId, leader, teamName, teamMembers };
-
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ParticipantsReg/studentregister`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      setEvents(prevEvents =>
+        prevEvents.map(event =>
+          event._id === postId
+            ? { ...event, likeCount: (event.likeCount || 0) + (likedPosts[postId] ? -1 : 1) }
+            : event
+        )
+      );
+
+      setLikedPosts(prev => {
+        const newLikes = {
+          ...prev,
+          [postId]: !prev[postId]
+        };
+        localStorage.setItem('likedPosts', JSON.stringify(newLikes));
+        return newLikes;
       });
-      const data = await response.json();
-      if (data.success) {
-        alert('Registration successful!');
-        onRegister();
-      } else {
-        alert('Registration failed. Please try again.');
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update like');
       }
+
+      // Refetch the updated events
+      const updatedResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/all/getEvent`, {
+        headers: {
+          'Authorization': `Bearer ${currentUser.token}`
+        }
+      });
+      const updatedData = await updatedResponse.json();
+      if (Array.isArray(updatedData.data)) {
+        setEvents(updatedData.data);
+      }
+
     } catch (error) {
-      console.error('Error registering:', error);
-      alert('Something went wrong during registration.');
+      console.error('Error updating like:', error);
+      // Revert optimistic update on error
+      setEvents(prevEvents =>
+        prevEvents.map(event =>
+          event._id === postId
+            ? { ...event, likeCount: event.likeCount - (likedPosts[postId] ? -1 : 1) }
+            : event
+        )
+      );
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white text-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 my-10">
-      <div className="mb-10 text-center">
-        <h2 className="text-4xl font-bold text-[#1D1D35]">Event Registration</h2>
-        {eventData && (
-          <p className="text-gray-500 mt-2">
-            {eventData.name} {eventData.price > 0 ? `(₹${eventData.price})` : '(Free)'}
-          </p>
-        )}
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="space-y-6">
-          <h3 className="text-2xl font-semibold text-[#1D1D35] border-b pb-2">Team Leader Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <inputField label="Full Name" value={leader.name} onChange={(e) => setLeader({ ...leader, name: e.target.value })} />
-            <inputField label="Email Address" type="email" value={leader.email} onChange={(e) => setLeader({ ...leader, email: e.target.value })} />
-            <inputField label="Phone Number" value={leader.phone} onChange={(e) => setLeader({ ...leader, phone: e.target.value })} />
-            <inputField label="College / Institution" value={leader.college} onChange={(e) => setLeader({ ...leader, college: e.target.value })} />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-2xl font-semibold text-[#1D1D35] border-b pb-2">Team Name</h3>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#1D1D35] focus:border-[#1D1D35]"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-semibold text-[#1D1D35]">Team Members</h3>
-            <button
-              type="button"
-              onClick={handleAddMember}
-              className="px-4 py-2 bg-[#1D1D35] text-white rounded-lg hover:bg-opacity-90 transition"
-            >
-              + Add Member
-            </button>
-          </div>
-
-          {teamMembers.length === 0 && (
-            <p className="text-gray-500 text-center py-4">No team members added yet.</p>
+    <div className="min-h-screen bg-gray-100">
+      {/* Navigation Bar */}
+      <nav className="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold text-gray-900">CampusConnect</Link>
+        <div className="flex items-center space-x-4">
+          {currentUser ? (
+            <button onClick={logout} className="px-4 py-2 text-gray-700 hover:text-indigo-600">Logout</button>
+          ) : null}
+          {userRole === "club-admin" && (
+            <button onClick={() => {}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Create Event</button>
           )}
-
-          <div className="space-y-4">
-            {teamMembers.map((member, index) => (
-              <TeamMemberItem
-                key={index}
-                member={member}
-                index={index}
-                onChangeMember={handleChangeMember}
-                onRemoveMember={handleRemoveMember}
-              />
-            ))}
-          </div>
         </div>
+      </nav>
 
-        <div>
-          <button
-            type="submit"
-            className="w-full py-4 text-white text-lg font-semibold bg-[#1D1D35] rounded-lg hover:bg-opacity-90 transition"
-          >
-            Complete Registration
-          </button>
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-center mb-6">All Events</h1>
+        {loading && <div className="text-center py-10">Loading...</div>}
+        {error && <div className="text-center text-red-600 py-10">{error}</div>}
+        {!loading && !error && events.length === 0 && <div className="text-center text-gray-600 py-10">No events found.</div>}
+
+        {/* Event Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {events.map((event) => (
+            <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              {/* Event Image */}
+              <div className="relative group cursor-pointer">
+                <img src={event.images?.[0]?.url || 'default-event-image.jpg'} alt={event.name} className="w-full h-64 object-cover group-hover:opacity-80 transition" onClick={() => handleEventClick(event._id)} />
+                <button onClick={(e) => { e.stopPropagation(); handleLike(event._id); }} className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md">
+                  {likedPosts[event._id] ? "❤️" : "🤍"}
+                </button>
+              </div>
+              
+              {/* Event Details */}
+              <div className="p-4">
+                <h2 className="font-bold text-lg text-gray-900 cursor-pointer" onClick={() => handleEventClick(event._id)}>{event.name}</h2>
+                <p className="text-gray-600 text-sm mt-1">{event.description}</p>
+                <p className="text-gray-500 text-sm mt-2">{new Date(event.date).toLocaleDateString()} at {event.time}</p>
+                
+                {/* Action Buttons */}
+                <div className="mt-4 flex justify-between items-center">
+                  {userRole === "student" && (
+                    <button onClick={() => handleRegisterClick(event._id)} className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">Register</button>
+                  )}
+                  {userRole === "club-admin" && (
+                    <div className="flex space-x-2">
+                      <button onClick={() => handleDeleteEvent(event._id)} className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
+                      <button onClick={() => handleViewAttendees(event._id)} className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Attendees</button>
+                      <button onClick={() => handleViewSponsors(event._id)} className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700">Sponsors</button>
+                    </div>
+                  )}
+                  {userRole === "sponsor" && (
+                    <button onClick={() => handleSponsorClick(event._id)} className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700">Sponsor</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </form>
+      </main>
     </div>
   );
 };
 
-const inputField = ({ label, type = "text", value, onChange }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-600">{label}</label>
-    <input
-      type={type}
-      className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-[#1D1D35] focus:border-[#1D1D35]"
-      value={value}
-      onChange={onChange}
-      required
-    />
-  </div>
-);
-
-export default StudentRegisterPage;
+export default AllEvents;
