@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import { useState, useEffect } from 'react';
+import FeedbackModal from '../components/Feedback';
+
 import {
   HeartIcon,
 
@@ -98,7 +100,7 @@ const TrendingPage = () => {
         throw new Error('Failed to update like');
       }
 
-      const updatedResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/all/top-events`);
+      const updatedResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/events/all/getEvent`);
       const updatedData = await updatedResponse.json();
       if (Array.isArray(updatedData.data)) {
         setTopPosts(updatedData.data.slice(0, 3));
@@ -115,6 +117,26 @@ const TrendingPage = () => {
       );
     }
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+const handleFeedbackSubmit = async (message) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/feedback/Getfeedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    if (response.ok) {
+      alert("Thank you for your feedback!");
+    } else {
+      alert("Failed to submit feedback.");
+    }
+  } catch (err) {
+    console.error("Feedback error:", err);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -253,8 +275,21 @@ const TrendingPage = () => {
             ))
           )}
         </div>
+        <div className="my-10 text-center">
+  <button
+    onClick={() => setIsModalOpen(true)}
+    className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+  >
+    Submit Feedback
+  </button>
+</div>
 
-        {/* Upcoming Events Section */}
+<FeedbackModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  onSubmit={handleFeedbackSubmit}
+/>
+
         <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
         <div className="space-y-4">
           {upcomingPosts.length === 0 ? (

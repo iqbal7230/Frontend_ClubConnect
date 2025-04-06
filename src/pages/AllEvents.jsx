@@ -3,12 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import { useState, useEffect } from 'react';
-import { 
-  HeartIcon, 
-  CurrencyDollarIcon, 
-} from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-import SearchEvents from '../components/SearchEvents';
+
 
 const AllEvents = () => {
   const navigate = useNavigate();
@@ -24,6 +19,12 @@ const AllEvents = () => {
 
   const handleEventClick = (eventId) => {
     navigate(`/event/${eventId}`);
+  };
+  const handleCertificate = () => {
+    navigate('/certificate');
+  };
+  const handleDashboard = () => {
+    navigate('/Dashboard');
   };
 
   const handleRegisterClick = (eventId) => {
@@ -160,7 +161,26 @@ const AllEvents = () => {
             <button onClick={logout} className="px-4 py-2 text-gray-700 hover:text-indigo-600">Logout</button>
           ) : null}
           {userRole === "club-admin" && (
-            <button onClick={() => {}} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Create Event</button>
+             <>
+             <button
+               onClick={handleCreateEventClick}
+               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+             >
+               Create Event
+             </button>
+             <button
+               onClick={handleCertificate}
+               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+             >
+               Certificate
+             </button>
+             <button
+               onClick={handleDashboard}
+               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+             >
+               Dashboard
+             </button>
+           </>
           )}
         </div>
       </nav>
