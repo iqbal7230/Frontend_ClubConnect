@@ -1,5 +1,5 @@
 # CLUB CONNECTX
-Backend Url: ``https://github.com/iqbal7230/backend_Clubconnect.git```
+Backend Url: ```https://github.com/iqbal7230/backend_Clubconnect.git```
 
 
 ### Bridging the Gap: Connecting Students, Clubs, and Opportunities  
