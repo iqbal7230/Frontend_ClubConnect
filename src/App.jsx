@@ -1,18 +1,12 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/authContext';
 import PrivateRoute from './components/PrivateRoute';
-
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import './App.css';
 import ProfilePage from './pages/ProfilePage';
 import ChatRoom from './pages/ChatRoom';
-
-
-
-import UserProfile from "./pages/UserProfile";
 import EventForm from './pages/EventForm';
 import LandingPost from './pages/LandingPost';
 import EventDetails from './pages/EventDetails';
@@ -21,9 +15,7 @@ import StudentRegisterPage from './pages/StudentRegisterPage';
 import AllEvents from './pages/AllEvents';
 import EventAttendees from './pages/EventAttendees';
 import EventSponsors from './pages/EventSponsors';
-import SponsorForm from './pages/SponsorForm';
-
-// import ChatRoom from './pages/ChatRoom';
+import SponsorForm from './pages/SponsorForm'
 
 
 function App() {
@@ -37,13 +29,12 @@ function App() {
           <Route path="/chat" element={<ChatRoom/>} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/login" element={<Login />} />
-          
           <Route path="/event" element={<EventForm/>} />
 
           <Route path="/landingpost" element={<LandingPost/>} />
 
           <Route path="/event/:id" element={<EventDetails />} />
-         
+      
       
         <Route path="/register-event/:eventId" element={<PrivateRoute><StudentRegisterPage /></PrivateRoute>} />
         
@@ -55,9 +46,6 @@ function App() {
         
         {/* Sponsor routes */}
         <Route path="/sponsor-event/:eventId" element={<PrivateRoute sponsorOnly={true}><SponsorForm /></PrivateRoute>} />
-          
-
-
           {/* Private routes */}
           <Route
             path="/dashboard"
