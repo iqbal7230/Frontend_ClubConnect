@@ -14,10 +14,10 @@ const SearchEvents = ({ onSearch }) => {
       <div className="flex items-center">
         <input
           type="text"
-          placeholder="Search events by venue, entry..."
+          placeholder="Search events by venue"
           value={searchQuery}
           onChange={handleSearch}
-          className="px-4 py-2 w-64 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-8 py-1 w-80 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
     );

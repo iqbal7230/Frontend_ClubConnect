@@ -146,7 +146,8 @@ const handleFeedbackSubmit = async (message) => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <Link to="/" className="text-2xl font-bold text-gray-900">
-              Club Connect
+              {/* Club Connect */}
+              <img src="club connect.png" alt="Club Connect Logo" className="h-30 w-auto" />
             </Link>
             <SearchEvents onSearch={() => { }} />
             <div className="flex items-center space-x-4">
@@ -170,21 +171,21 @@ const handleFeedbackSubmit = async (message) => {
                 <>
                   <Link
                     to="/login"
-                    className="flex items-center px-4 py-2 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
+                    className="flex items-center px-2 py-1 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
                   >
                     <UserIcon className="h-5 w-5 mr-2" />
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="flex items-center px-4 py-2 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
+                    className="flex items-center px-2 py-1 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
                   >
                     <UserIcon className="h-5 w-5 mr-2" />
                     Sign Up
                   </Link>
                   <Link
                     to="/chat"
-                    className="flex items-center px-4 py-2 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
+                    className="flex items-center px-2 py-1 bg-[#202938] text-white rounded-md hover:bg-[#1a2330] transition transform hover:scale-105"
                   >
                     <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />
                     Ask AI
