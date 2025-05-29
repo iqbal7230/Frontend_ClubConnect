@@ -1,7 +1,7 @@
 // src/pages/SponsorForm.jsx
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/authcontext.jsx';
 
 const SponsorForm = () => {
   const { eventId } = useParams();

@@ -1,12 +1,12 @@
 // src/components/UserProfile/UserProfile.jsx
-import { useAuth } from "../context/authContext";
-import Header from "../components/UserProfile/Header";
-import BasicInfo from "../components/UserProfile/BasicInfo";
-import AboutSection from "../components/UserProfile/AboutSection";
-import ActivityStats from "../components/UserProfile/ActivityStatus";
-import StudentEvents from "../components/UserProfile/StudentEvents";
-import ClubAdminEvents from "../components/UserProfile/ClubAdminEvents";
-import SponsorshipHistory from "../components/UserProfile/SponsorshipHistory";
+import { useAuth } from "../context/authcontext.jsx";
+import Header from "../components/UserProfile/Header.jsx";
+import BasicInfo from "../components/UserProfile/BasicInfo.jsx";
+import AboutSection from "../components/UserProfile/AboutSection.jsx";
+import ActivityStats from "../components/UserProfile/ActivityStatus.jsx";
+import StudentEvents from "../components/UserProfile/StudentEvents.jsx";
+import ClubAdminEvents from "../components/UserProfile/ClubAdminEvents.jsx";
+import SponsorshipHistory from "../components/UserProfile/SponsorshipHistory.jsx";
 
 const UserProfile = ({ user }) => {
   const { currentUser } = useAuth();

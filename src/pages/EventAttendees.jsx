@@ -1,7 +1,7 @@
 // src/pages/EventAttendees.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/authcontext.jsx';
 
 const EventAttendees = () => {
   const { eventId } = useParams();

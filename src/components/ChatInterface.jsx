@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useChat } from '../context/ChatContext';
-import ChatSuggestions from './ChatSuggestions';
+import { useChat } from '../context/ChatContext.jsx';
+import ChatSuggestions from './ChatSuggestions.jsx';
 
 const ChatInterface = () => {
   const { messages, handleNewMessage, isLoading } = useChat();

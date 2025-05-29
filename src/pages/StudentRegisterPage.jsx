@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import TeamMemberItem from '../components/TeamMemberItem';
+import TeamMemberItem from '../components/TeamMemberItem.jsx';
 import { useParams } from 'react-router-dom';
 
 const StudentRegisterPage = ({ onRegister }) => {

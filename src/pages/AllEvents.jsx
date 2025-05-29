@@ -1,7 +1,7 @@
 // src/pages/AllEvents.jsx
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/authcontext.jsx';
 import { useState, useEffect } from 'react';
 
 

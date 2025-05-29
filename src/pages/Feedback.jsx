@@ -1,4 +1,4 @@
-import FeedbackModal from '../components/Feedback';
+import FeedbackModal from '../components/Feedback.jsx';
 import { useState } from 'react';
 
 const SomePage = () => {

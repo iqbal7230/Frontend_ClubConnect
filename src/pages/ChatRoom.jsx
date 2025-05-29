@@ -1,5 +1,5 @@
-import { ChatProvider } from '../context/ChatContext';
-import ChatInterface from '../components/ChatInterface';
+import { ChatProvider } from '../context/ChatContext.jsx';
+import ChatInterface from '../components/ChatInterface.jsx';
 
 function ChatRoom() {
   return (
